@@ -255,8 +255,10 @@ function parseEvents(dayData) {
     const altGameNote = comp.altGameNote || '';
     const groupTag = altGameNote.match(/Group\s+[A-Z]/i)?.[0] || 'Group ?';
 
-    const isFinal    = statusName.includes('FINAL') || statusDesc.toLowerCase().includes('full time') || statusDesc.toLowerCase().includes('final');
-    const isLive     = statusName.includes('IN_PROGRESS') || statusDesc.toLowerCase().includes('progress') || statusDesc.toLowerCase().includes('halftime');
+    const typeId     = status.type?.id;
+    // ESPN type IDs: 1=scheduled, 2=in_progress, 3=final, 6=halftime, 22=end_of_period
+    const isFinal    = typeId === 3 || statusName.includes('FINAL') || statusDesc.toLowerCase().includes('final') || statusDesc.toLowerCase().includes('full time');
+    const isLive     = !isFinal && (typeId === 2 || typeId === 6 || typeId === 22 || statusName.includes('IN_PROGRESS') || statusName.includes('HALFTIME') || statusName.includes('END_OF') || statusDesc.toLowerCase().includes('progress') || statusDesc.toLowerCase().includes('halftime') || statusDesc.toLowerCase().includes('half time'));
     const isUpcoming = !isFinal && !isLive;
 
     const homeScore = parseInt(home.score, 10);
